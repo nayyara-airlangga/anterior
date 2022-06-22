@@ -1,1 +1,5 @@
-fn main() {}
+use dotenv::dotenv;
+
+fn main() {
+    dotenv().ok();
+}

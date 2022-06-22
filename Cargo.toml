@@ -9,3 +9,13 @@ edition = "2021"
 path = "src/lib/mod.rs"
 
 [dependencies]
+actix-web = "4.1.0"
+chrono = "0.4.19"
+dotenv = "0.15.0"
+jsonwebtoken = "8.1.1"
+ring = "0.16.20"
+serde = { version = "1.0.137", features = ["derive"] }
+sqlx = { version = "0.6.0", features = [
+    "runtime-actix-native-tls",
+    "postgres",
+] }
