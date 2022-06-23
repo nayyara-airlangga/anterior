@@ -1,9 +1,12 @@
 use actix_web::main;
 
 use dotenv::dotenv;
-
-use anterior::{db::connection::create_connection, log::init_logger};
 use sqlx::error::BoxDynError;
+
+use anterior::{
+    db::{connection::create_connection, migrate::apply_migrations},
+    log::init_logger,
+};
 
 #[main]
 async fn main() -> Result<(), BoxDynError> {
@@ -13,12 +16,10 @@ async fn main() -> Result<(), BoxDynError> {
     // Init logger
     init_logger();
 
-    // Run migrations on release
-    if cfg!(not(debug_assertions)) {
-        sqlx::migrate!();
-    }
+    let pool = create_connection(8).await?;
 
-    let _pool = create_connection(8).await?;
+    // Run migrations to db
+    apply_migrations(&pool).await?;
 
     Ok(())
 }
