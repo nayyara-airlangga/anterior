@@ -2,7 +2,7 @@ use actix_web::main;
 
 use dotenv::dotenv;
 
-use anterior::log::init_logger;
+use anterior::{db::connection::create_connection, log::init_logger};
 use sqlx::error::BoxDynError;
 
 #[main]
@@ -17,6 +17,8 @@ async fn main() -> Result<(), BoxDynError> {
     if cfg!(not(debug_assertions)) {
         sqlx::migrate!();
     }
+
+    let _pool = create_connection(8).await?;
 
     Ok(())
 }
