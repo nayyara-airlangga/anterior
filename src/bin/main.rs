@@ -3,7 +3,7 @@ use actix_web::main;
 use dotenv::dotenv;
 use sqlx::error::BoxDynError;
 
-use anterior::{
+use posterior::{
     db::{connection::create_connection, migrate::apply_migrations},
     log::init_logger,
 };
