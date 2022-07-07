@@ -1,4 +1,4 @@
-use actix_web::main;
+use actix_web;
 
 use dotenv::dotenv;
 use sqlx::error::BoxDynError;
@@ -8,7 +8,7 @@ use posterior::{
     log::init_logger,
 };
 
-#[main]
+#[actix_web::main]
 async fn main() -> Result<(), BoxDynError> {
     // Init env vars
     dotenv().ok();
