@@ -4,9 +4,9 @@ use serde::{Deserialize, Serialize};
 pub struct AuthToken {
     exp: i64,
     iat: i64,
-    id: u64,
-    username: String,
-    name: String,
+    pub id: u64,
+    pub username: String,
+    pub name: String,
 }
 
 impl AuthToken {
