@@ -4,6 +4,7 @@ use dotenv::dotenv;
 use sqlx::error::BoxDynError;
 
 use posterior::{
+    api::server::run_server,
     db::{connection::create_connection, migrate::apply_migrations},
     log::init_logger,
 };
@@ -20,6 +21,9 @@ async fn main() -> Result<(), BoxDynError> {
 
     // Run migrations to db
     apply_migrations(&pool).await?;
+
+    // Start server and services
+    run_server(pool).await?;
 
     Ok(())
 }
