@@ -24,7 +24,7 @@ pub async fn run_server(pool: Pool<Postgres>) -> Result<()> {
             .wrap(cors)
             .wrap(middleware::Logger::default())
             .app_data(web::Data::new(pool.clone()))
-            .configure(auth_services)
+            .service(web::scope("/api").configure(auth_services))
     })
     .bind(("127.0.0.1", port))
     {
