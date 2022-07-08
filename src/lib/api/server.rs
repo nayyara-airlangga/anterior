@@ -3,7 +3,7 @@ use std::{env, io::Result, process};
 use actix_web::{middleware, web, App, HttpServer};
 use sqlx::{Pool, Postgres};
 
-use crate::api::cors::config_cors;
+use crate::api::{auth::config::auth_services, cors::config_cors};
 
 pub async fn run_server(pool: Pool<Postgres>) -> Result<()> {
     let port = env::var("PORT")
@@ -24,6 +24,7 @@ pub async fn run_server(pool: Pool<Postgres>) -> Result<()> {
             .wrap(cors)
             .wrap(middleware::Logger::default())
             .app_data(web::Data::new(pool.clone()))
+            .configure(auth_services)
     })
     .bind(("127.0.0.1", port))
     {
