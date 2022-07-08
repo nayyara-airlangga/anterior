@@ -1,4 +1,4 @@
-Table users {
+Table posterior.users {
   id int [pk, not null, increment]
   email varchar(255) [unique, not null]
   username varchar(255) [unique, not null]
@@ -14,7 +14,7 @@ Table users {
   }
 }
 
-Table posts {
+Table posterior.posts {
   id int [pk, not null, increment]
   title varchar(255) [not null]
   headline varchar(1000) [not null]
@@ -35,9 +35,9 @@ Table posts {
   }
 }
 
-Ref: posts.author_id > users.id [delete: restrict, update: cascade]
+Ref: posterior.posts.author_id > posterior.users.id [delete: restrict, update: cascade]
 
-Table comments {
+Table posterior.comments {
   id int [pk, not null, increment]
   comment text [not null]
   
@@ -53,6 +53,7 @@ Table comments {
   }
 }
 
-Ref: comments.author_id > users.id [delete: restrict, update: cascade]
-Ref: comments.post_id > posts.id [delete: restrict, update: cascade]
-Ref: comments.parent_id > comments.id [delete: set null, update: cascade]
+Ref: posterior.comments.author_id > posterior.users.id [delete: restrict, update: cascade]
+Ref: posterior.comments.post_id > posterior.posts.id [delete: restrict, update: cascade]
+Ref: posterior.comments.parent_id > posterior.comments.id [delete: set null, update: cascade]
+

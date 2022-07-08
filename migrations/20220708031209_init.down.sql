@@ -1,6 +1,8 @@
 -- Add down migration script here
-DROP TABLE "users";
+DROP TABLE "posterior"."comments";
 
-DROP TABLE "posts";
+DROP TABLE "posterior"."posts";
 
-DROP TABLE "comments";
+DROP TABLE "posterior"."users";
+
+DROP SCHEMA IF EXISTS "posterior" RESTRICT;
