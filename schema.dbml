@@ -1,0 +1,58 @@
+Table users {
+  id int [pk, not null, increment]
+  email varchar(255) [unique, not null]
+  username varchar(255) [unique, not null]
+  name varchar(255) [not null]
+  password varchar(255) [not null]
+  
+  created_at timestamptz [not null, default: `now()`]
+
+  Indexes {
+    id
+    username
+    name
+  }
+}
+
+Table posts {
+  id int [pk, not null, increment]
+  title varchar(255) [not null]
+  headline varchar(1000) [not null]
+  slug varchar(255) [unique, not null]
+  content text [not null]
+  published boolean [default: false, not null]
+  
+  created_at timestamptz [not null, default: `now()`]
+  edited_at timestamptz [not null, default: `now()`]
+  published_at timestamptz
+  
+  author_id int [not null]
+  
+  Indexes {
+    id
+    title
+    slug
+  }
+}
+
+Ref: posts.author_id > users.id [delete: restrict, update: cascade]
+
+Table comments {
+  id int [pk, not null, increment]
+  comment text [not null]
+  
+  created_at timestamptz [not null, default: `now()`]
+  edited_at timestamptz [not null, default: `now()`]
+
+  post_id int [not null]
+  author_id int [not null]
+  parent_id int
+
+  Indexes {
+    id
+  }
+}
+
+Ref: comments.author_id > users.id [delete: restrict, update: cascade]
+Ref: comments.post_id > posts.id [delete: restrict, update: cascade]
+Ref: comments.parent_id > comments.id [delete: set null, update: cascade]
