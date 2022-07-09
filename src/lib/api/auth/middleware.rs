@@ -3,7 +3,7 @@ use std::pin::Pin;
 use actix_web::{
     body::EitherBody,
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
-    Error, HttpResponse,
+    Error, HttpMessage, HttpResponse,
 };
 use futures::{
     future::{ok, Ready},
@@ -59,7 +59,7 @@ where
 
                         if let Some(token) = token {
                             if let Ok(payload) = decode_auth_token(token) {
-                                req.guard_ctx().req_data_mut().insert(payload);
+                                req.extensions_mut().insert(payload);
 
                                 let res_fut = self.service.call(req);
 
