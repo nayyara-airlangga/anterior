@@ -7,16 +7,14 @@ pub fn auth_services(cfg: &mut web::ServiceConfig) {
         web::scope("/auth")
             .service(
                 web::resource("/login").route(
-                    web::route()
-                        .guard(guard::Post())
+                    web::post()
                         .guard(guard::Header("Content-Type", "application/json"))
                         .to(login),
                 ),
             )
             .service(
                 web::resource("/register").route(
-                    web::route()
-                        .guard(guard::Post())
+                    web::post()
                         .guard(guard::Header("Content-Type", "application/json"))
                         .to(register),
                 ),
