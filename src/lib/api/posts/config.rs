@@ -1,6 +1,6 @@
 use actix_web::web;
 
-use crate::api::auth::middlewares::auth_token::AuthToken;
+use crate::api::auth::middlewares::{auth_token::AuthToken, super_user::SuperUser};
 
 use super::handlers::{create_post::create_post, get_posts::get_posts};
 
@@ -10,6 +10,7 @@ pub fn posts_services(cfg: &mut web::ServiceConfig) {
             .service(web::resource("").route(web::get().to(get_posts)))
             .service(
                 web::resource("/create")
+                    .wrap(SuperUser)
                     .wrap(AuthToken)
                     .route(web::post().to(create_post)),
             ),
