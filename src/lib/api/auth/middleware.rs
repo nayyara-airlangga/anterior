@@ -9,6 +9,7 @@ use futures::{
     future::{ok, Ready},
     Future,
 };
+use serde_json::json;
 
 use crate::jwt::handlers::decode_auth_token;
 
@@ -48,7 +49,11 @@ where
     forward_ready!(service);
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
-        let unauthorized_res = HttpResponse::Unauthorized().finish().map_into_right_body();
+        let unauthorized_res = HttpResponse::Unauthorized()
+            .json(json!({
+                "message": "Unauthenticated request"
+            }))
+            .map_into_right_body();
 
         match req.headers().get("Authorization") {
             Some(header) => {
