@@ -1,6 +1,6 @@
 use actix_web::web;
 
-use crate::api::auth::middleware::AuthToken;
+use crate::api::auth::middlewares::auth_token::AuthToken;
 
 use super::handlers::me;
 
