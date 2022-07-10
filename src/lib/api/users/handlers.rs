@@ -17,7 +17,7 @@ pub async fn me(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
 
     let user = match sqlx::query_as::<Postgres, User>(
         "
-SELECT id, username, name, email FROM posterior.users
+SELECT id, username, name, email, created_at FROM posterior.users
 WHERE id = $1
 ",
     )

@@ -8,6 +8,7 @@ pub struct UserWithPassword {
     pub name: String,
     pub email: String,
     pub password: String,
+    pub created_at: chrono::DateTime<chrono::Local>,
 }
 
 #[derive(FromRow, Debug, Deserialize, Serialize)]
@@ -16,4 +17,5 @@ pub struct User {
     pub username: String,
     pub name: String,
     pub email: String,
+    pub created_at: chrono::DateTime<chrono::Local>,
 }
