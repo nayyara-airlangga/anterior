@@ -37,7 +37,8 @@ INSERT INTO posterior.posts (title, slug, headline, content, published, author_i
 VALUES($1, $2, $3, $4, $5, $6)
 RETURNING *
 )
-SELECT post.id, title, headline, slug, content, published, post.created_at, edited_at, published_at, author_id, users.id, username, name, email, users.created_at FROM post
+SELECT post.id, title, headline, slug, content, published, post.created_at, edited_at, published_at, author_id, users.id, username, name, email, users.created_at
+FROM post
 LEFT JOIN posterior.users AS users ON post.author_id = users.id
 ",
     )
@@ -72,6 +73,7 @@ LEFT JOIN posterior.users AS users ON post.author_id = users.id
         Ok(query) => query,
         Err(err) => {
             if let Some(err) = err.as_database_error() {
+                // Duplicate on unique constraint status
                 if err.code().unwrap() == "23505" {
                     return HttpResponse::Forbidden().json(json!({
                         "message": format!("Post with slug '{slug}' already exists")
