@@ -32,7 +32,7 @@ pub async fn create_post(
 
     let post = match sqlx::query::<Postgres>(
         "
-WITH post as (
+WITH post AS (
 INSERT INTO posterior.posts (title, slug, headline, content, published, author_id)
 VALUES($1, $2, $3, $4, $5, $6)
 RETURNING *
