@@ -2,9 +2,9 @@ use actix_web::{web, HttpResponse};
 use serde_json::json;
 use sqlx::{postgres::PgRow, Pool, Postgres, Row};
 
-type DbPool = Pool<Postgres>;
-
 use crate::models::{post::PostWithAuthor, user::User};
+
+type DbPool = Pool<Postgres>;
 
 pub async fn get_posts(pool: web::Data<DbPool>) -> HttpResponse {
     let posts = match sqlx::query::<Postgres>("
