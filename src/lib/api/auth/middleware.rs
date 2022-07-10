@@ -13,9 +13,9 @@ use serde_json::json;
 
 use crate::jwt::handlers::decode_auth_token;
 
-pub struct AuthTokenService;
+pub struct AuthToken;
 
-impl<S, B> Transform<S, ServiceRequest> for AuthTokenService
+impl<S, B> Transform<S, ServiceRequest> for AuthToken
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
