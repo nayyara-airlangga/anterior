@@ -3,7 +3,10 @@ use std::{env, io::Result, process};
 use actix_web::{middleware, web, App, HttpServer};
 use sqlx::{Pool, Postgres};
 
-use crate::api::{auth::config::auth_services, cors::config_cors, users::config::users_services};
+use crate::api::{
+    auth::config::auth_services, cors::config_cors, posts::config::posts_services,
+    users::config::users_services,
+};
 
 pub async fn run_server(pool: Pool<Postgres>) -> Result<()> {
     let port = env::var("PORT")
@@ -27,7 +30,8 @@ pub async fn run_server(pool: Pool<Postgres>) -> Result<()> {
             .service(
                 web::scope("/api")
                     .configure(auth_services)
-                    .configure(users_services),
+                    .configure(users_services)
+                    .configure(posts_services),
             )
     })
     .bind(("127.0.0.1", port))
