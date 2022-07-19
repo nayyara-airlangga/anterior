@@ -35,11 +35,8 @@ where
     S::Future: 'static,
     B: 'static,
 {
-    let unauthorized_res = ErrorResponse::new(
-        StatusCode::UNAUTHORIZED,
-        String::from("Unauthenticated request"),
-    )
-    .map_into_right_body();
+    let unauthorized_res = ErrorResponse::new(StatusCode::UNAUTHORIZED, "Unauthenticated request")
+        .map_into_right_body();
 
     match req.headers().get("Authorization") {
         Some(header) => {
@@ -88,18 +85,14 @@ where
     S::Future: 'static,
     B: 'static,
 {
-    let forbidden_res = ErrorResponse::new(
-        StatusCode::FORBIDDEN,
-        String::from("Not permitted to access resource"),
-    )
-    .map_into_right_body();
-    let not_found_res = ErrorResponse::new(StatusCode::NOT_FOUND, String::from("User not found"))
-        .map_into_right_body();
-    let internal_server_err_res = ErrorResponse::new(
-        StatusCode::INTERNAL_SERVER_ERROR,
-        String::from("Internal server error"),
-    )
-    .map_into_right_body();
+    let forbidden_res =
+        ErrorResponse::new(StatusCode::FORBIDDEN, "Not permitted to access resource")
+            .map_into_right_body();
+    let not_found_res =
+        ErrorResponse::new(StatusCode::NOT_FOUND, "User not found").map_into_right_body();
+    let internal_server_err_res =
+        ErrorResponse::new(StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
+            .map_into_right_body();
 
     let (http_req, payload) = req.into_parts();
     let new_http_req = http_req.clone();
