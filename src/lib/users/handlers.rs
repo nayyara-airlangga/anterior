@@ -3,7 +3,11 @@ use jsonwebtoken::TokenData;
 
 use crate::{errors::ErrorResponse, jwt::payload::AuthToken};
 
-use super::UserService;
+use super::{
+    errors::LoginError,
+    payloads::{GetSelfResponse, LoginPayload, LoginResponse},
+    UserService,
+};
 
 pub async fn get_self(req: HttpRequest, service: web::Data<UserService>) -> HttpResponse {
     let AuthToken { id, .. } = req
@@ -14,17 +18,29 @@ pub async fn get_self(req: HttpRequest, service: web::Data<UserService>) -> Http
     let id = id as i32;
 
     match service.as_ref().get_self(id).await {
-        Ok(user) => HttpResponse::Ok().json(user),
+        Ok(user) => GetSelfResponse::new(user),
         Err(sqlx::Error::RowNotFound) => {
-            ErrorResponse::new(StatusCode::NOT_FOUND, String::from("User not found"))
+            ErrorResponse::new(StatusCode::NOT_FOUND, "User not found")
         }
         Err(err) => {
             log::error!("{err}");
 
-            ErrorResponse::new(
-                StatusCode::INTERNAL_SERVER_ERROR,
-                String::from("Internal server error"),
-            )
+            ErrorResponse::new(StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
         }
+    }
+}
+
+pub async fn login(body: web::Json<LoginPayload>, service: web::Data<UserService>) -> HttpResponse {
+    match service.as_ref().login(body).await {
+        Ok(token) => LoginResponse::new(token),
+        Err(err) => match err {
+            LoginError::NotFound => ErrorResponse::new(StatusCode::NOT_FOUND, "User not found"),
+            LoginError::IncorrectPassword => {
+                ErrorResponse::new(StatusCode::FORBIDDEN, "Incorrect password")
+            }
+            LoginError::InternalServerError => {
+                ErrorResponse::new(StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
+            }
+        },
     }
 }
