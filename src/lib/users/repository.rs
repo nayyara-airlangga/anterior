@@ -12,7 +12,7 @@ impl UserRepository {
         UserRepository { pool }
     }
 
-    pub async fn get_user_by_id(&self, id: i32) -> Result<Option<User>> {
+    pub async fn get_user_by_id(&self, id: i32) -> Result<User> {
         sqlx::query_as::<Postgres, User>(
             "
 SELECT id, username, name, email, created_at
@@ -21,14 +21,11 @@ WHERE id = $1
 ",
         )
         .bind(&id)
-        .fetch_optional(&self.pool)
+        .fetch_one(&self.pool)
         .await
     }
 
-    pub async fn get_user_by_username_or_email(
-        &self,
-        key: String,
-    ) -> Result<Option<UserWithPassword>> {
+    pub async fn get_user_by_username_or_email(&self, key: String) -> Result<UserWithPassword> {
         sqlx::query_as::<Postgres, UserWithPassword>(
             "
 SELECT *
@@ -38,7 +35,7 @@ WHERE username = $1 OR email = $2
         )
         .bind(&key)
         .bind(&key)
-        .fetch_optional(&self.pool)
+        .fetch_one(&self.pool)
         .await
     }
 }
