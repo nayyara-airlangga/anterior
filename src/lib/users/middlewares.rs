@@ -1,20 +1,26 @@
-use std::pin::Pin;
+use std::{env, pin::Pin};
 
 use actix_web::{
     body::EitherBody,
     dev::{Service, ServiceFactory, ServiceRequest, ServiceResponse},
     http::StatusCode,
-    Error,
+    web, Error, HttpMessage,
 };
 use futures::Future;
+use jsonwebtoken::TokenData;
+use sqlx::{Pool, Postgres};
 
-use crate::jwt::handlers::decode_auth_token;
+use crate::{
+    errors::ErrorResponse,
+    jwt::{handlers::decode_auth_token, payload::AuthToken},
+    models::user::User,
+};
 
-use super::payloads::ErrorResponse;
+type DbPool = Pool<Postgres>;
 
 pub fn validate_user_token<S, B>(
     req: ServiceRequest,
-    srv: &<dyn ServiceFactory<
+    service: &<dyn ServiceFactory<
         ServiceRequest,
         Config = (),
         Response = ServiceResponse<EitherBody<B>>,
@@ -44,9 +50,9 @@ where
 
                     if let Some(token) = token {
                         if let Ok(payload) = decode_auth_token(token) {
-                            req.guard_ctx().req_data_mut().insert(payload);
+                            req.extensions_mut().insert(payload);
 
-                            let res_fut = srv.call(req);
+                            let res_fut = service.call(req);
 
                             return Box::pin(async {
                                 let ok_res = res_fut.await;
@@ -63,4 +69,94 @@ where
         }
         None => Box::pin(async { Ok(req.into_response(unauthorized_res)) }),
     }
+}
+
+pub fn validate_super_user<S, B>(
+    req: ServiceRequest,
+    service: &<dyn ServiceFactory<
+        ServiceRequest,
+        Config = (),
+        Response = ServiceResponse<EitherBody<B>>,
+        Error = Error,
+        InitError = (),
+        Future = Pin<Box<dyn Future<Output = Result<ServiceResponse<EitherBody<B>>, Error>>>>,
+        Service = S,
+    > as ServiceFactory<ServiceRequest>>::Service,
+) -> Pin<Box<dyn Future<Output = Result<ServiceResponse<EitherBody<B>>, Error>>>>
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S::Future: 'static,
+    B: 'static,
+{
+    let forbidden_res = ErrorResponse::new(
+        StatusCode::FORBIDDEN,
+        String::from("Not permitted to access resource"),
+    )
+    .map_into_right_body();
+    let not_found_res = ErrorResponse::new(StatusCode::NOT_FOUND, String::from("User not found"))
+        .map_into_right_body();
+    let internal_server_err_res = ErrorResponse::new(
+        StatusCode::INTERNAL_SERVER_ERROR,
+        String::from("Internal server error"),
+    )
+    .map_into_right_body();
+
+    let (http_req, payload) = req.into_parts();
+    let new_http_req = http_req.clone();
+    let new_req = ServiceRequest::from_parts(http_req, payload);
+    let res_fut = service.call(new_req);
+
+    Box::pin(async move {
+        let super_username = match env::var("SUPER_USER") {
+            Ok(val) => val,
+            Err(err) => {
+                log::error!("{err}");
+                return Ok(ServiceResponse::new(new_http_req, internal_server_err_res));
+            }
+        };
+
+        let super_email = match env::var("SUPER_EMAIL") {
+            Ok(val) => val,
+            Err(err) => {
+                log::error!("{err}");
+                return Ok(ServiceResponse::new(new_http_req, internal_server_err_res));
+            }
+        };
+
+        let pool = new_http_req.app_data::<web::Data<DbPool>>().unwrap();
+
+        let AuthToken { id, .. } = new_http_req
+            .extensions()
+            .get::<TokenData<AuthToken>>()
+            .unwrap()
+            .claims;
+        let id = id as i32;
+
+        let user = match sqlx::query_as::<Postgres, User>(
+            "
+SELECT id, username, name, email, created_at FROM posterior.users
+WHERE id = $1
+",
+        )
+        .bind(&id)
+        .fetch_optional(&***pool)
+        .await
+        {
+            Ok(query) => query,
+            Err(err) => {
+                log::error!("{err}");
+                return Ok(ServiceResponse::new(new_http_req, internal_server_err_res));
+            }
+        };
+
+        if let Some(user) = user {
+            if user.username == super_username && user.email == super_email {
+                res_fut.await.map(ServiceResponse::map_into_left_body)
+            } else {
+                Ok(ServiceResponse::new(new_http_req, forbidden_res))
+            }
+        } else {
+            Ok(ServiceResponse::new(new_http_req, not_found_res))
+        }
+    })
 }
