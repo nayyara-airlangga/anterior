@@ -1,23 +1,23 @@
-use argon2::{
-    password_hash::{rand_core::OsRng, SaltString},
-    Argon2, PasswordHash, PasswordHasher, PasswordVerifier,
-};
+use std::{env, process};
+
+use argon2::{self, Config, Variant};
 
 pub fn create_hash(text: &str) -> String {
-    let salt = SaltString::generate(&mut OsRng);
+    let salt = env::var("HASH_SALT").unwrap_or_else(|err| {
+        log::error!("{err}");
+        process::exit(1)
+    });
+    let salt = salt.as_bytes();
 
-    let argon2 = Argon2::default();
+    let mut config = Config::default();
+    config.variant = Variant::Argon2id;
 
-    argon2
-        .hash_password(text.as_bytes(), &salt)
-        .unwrap()
-        .to_string()
+    argon2::hash_encoded(text.as_bytes(), salt, &config).unwrap()
 }
 
 pub fn verify_hash(text: &str, hash_str: &str) -> bool {
-    let hash = PasswordHash::new(hash_str).unwrap();
+    let mut config = Config::default();
+    config.variant = Variant::Argon2id;
 
-    Argon2::default()
-        .verify_password(text.as_bytes(), &hash)
-        .is_ok()
+    argon2::verify_encoded(hash_str, text.as_bytes()).unwrap()
 }
