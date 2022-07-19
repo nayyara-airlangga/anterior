@@ -6,16 +6,14 @@ use sqlx::{Pool, Postgres};
 use crate::api::{cors::config_cors, routes::routes};
 
 pub async fn run_server(pool: Pool<Postgres>) -> Result<()> {
-    let port = env::var("PORT")
-        .unwrap_or_else(|err| {
-            log::error!("{err}");
-            process::exit(1)
-        })
-        .parse::<u16>()
-        .unwrap_or_else(|err| {
-            log::error!("{err}");
-            process::exit(1)
-        });
+    let host = env::var("HOST").unwrap_or_else(|err| {
+        log::error!("{err}");
+        process::exit(1)
+    });
+    let port = env::var("PORT").unwrap_or_else(|err| {
+        log::error!("{err}");
+        process::exit(1)
+    });
 
     let server = match HttpServer::new(move || {
         let cors = config_cors();
@@ -26,7 +24,7 @@ pub async fn run_server(pool: Pool<Postgres>) -> Result<()> {
             .app_data(web::Data::new(pool.clone()))
             .configure(routes)
     })
-    .bind(("127.0.0.1", port))
+    .bind(format!("{host}:{port}"))
     {
         Ok(server) => {
             log::info!("Server successfully created");
