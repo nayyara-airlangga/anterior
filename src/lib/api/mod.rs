@@ -1,5 +1,5 @@
-mod auth;
-mod cors;
-mod posts;
+pub mod auth;
+pub mod cors;
+pub mod posts;
+pub mod routes;
 pub mod server;
-mod users;
