@@ -6,7 +6,7 @@ use sqlx::error::BoxDynError;
 use posterior::{
     api::server::run_server,
     db::{connection::create_connection, migrate::apply_migrations},
-    log::init_logger,
+    logger::init_logger,
 };
 
 #[actix_web::main]
