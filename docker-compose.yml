@@ -20,26 +20,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-       - postgres
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          cpus: "0.1"
-          memory: "2g"
-    env_file:
-      - .env
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    networks:
-      - postgres
+       - postgres 
 
 networks:
   postgres:
@@ -47,4 +28,3 @@ networks:
       
 volumes:
   postgres:
-  pgadmin:
