@@ -1,5 +1,5 @@
 use actix_web::HttpResponse;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::json;
 
 use crate::models::user::User;

@@ -32,7 +32,11 @@ impl UserService {
         {
             Ok(user) => user,
             Err(sqlx::Error::RowNotFound) => return Err(LoginError::NotFound),
-            Err(err) => return Err(LoginError::InternalServerError),
+            Err(err) => {
+                log::error!("{err}");
+
+                return Err(LoginError::InternalServerError);
+            }
         };
 
         if !verify_hash(&body.password, &user.password) {
