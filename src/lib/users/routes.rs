@@ -1,13 +1,11 @@
 use actix_web::web;
 
-use crate::api::auth::middlewares::auth_token::AuthToken;
-
-use super::handlers::me;
+use super::{handlers::me, middlewares::validate_user_token};
 
 pub fn users_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/users")
-            .wrap(AuthToken)
+            .wrap_fn(validate_user_token)
             .service(web::resource("/me").route(web::get().to(me))),
     );
 }
