@@ -1,13 +1,10 @@
 use actix_web::{http::StatusCode, HttpResponse};
 use serde_json::json;
 
-pub struct ErrorResponse {
-    pub code: StatusCode,
-    pub message: String,
-}
+pub struct ErrorResponse;
 
 impl ErrorResponse {
-    pub fn new(code: StatusCode, message: String) -> HttpResponse {
+    pub fn new(code: StatusCode, message: &str) -> HttpResponse {
         HttpResponse::build(code).json(json!({ "message": message }))
     }
 }
