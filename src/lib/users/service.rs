@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use crate::models::user::User;
 
 use super::repository::UserRepository;
@@ -14,7 +12,7 @@ impl UserService {
         UserService { repository }
     }
 
-    pub async fn get_self(&self, id: i32) -> Result<User, Box<dyn Error>> {
+    pub async fn get_self(&self, id: i32) -> Result<User, sqlx::Error> {
         let user = self.repository.get_user_by_id(id).await?;
 
         Ok(user)

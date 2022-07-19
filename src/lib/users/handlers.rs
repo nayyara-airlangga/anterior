@@ -1,13 +1,11 @@
-use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
+use actix_web::{http::StatusCode, web, HttpMessage, HttpRequest, HttpResponse};
 use jsonwebtoken::TokenData;
-use serde_json::json;
-use sqlx::{Pool, Postgres};
 
-use crate::{jwt::payload::AuthToken, models::user::User};
+use crate::{errors::ErrorResponse, jwt::payload::AuthToken};
 
-type DbPool = Pool<Postgres>;
+use super::UserService;
 
-pub async fn me(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
+pub async fn get_self(req: HttpRequest, service: web::Data<UserService>) -> HttpResponse {
     let AuthToken { id, .. } = req
         .extensions()
         .get::<TokenData<AuthToken>>()
@@ -15,28 +13,18 @@ pub async fn me(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
         .claims;
     let id = id as i32;
 
-    let user = match sqlx::query_as::<Postgres, User>(
-        "
-SELECT id, username, name, email, created_at FROM posterior.users
-WHERE id = $1
-",
-    )
-    .bind(&id)
-    .fetch_optional(&**pool)
-    .await
-    {
-        Ok(query) => query,
+    match service.as_ref().get_self(id).await {
+        Ok(user) => HttpResponse::Ok().json(user),
+        Err(sqlx::Error::RowNotFound) => {
+            ErrorResponse::new(StatusCode::NOT_FOUND, String::from("User not found"))
+        }
         Err(err) => {
             log::error!("{err}");
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
 
-    if let Some(user) = user {
-        HttpResponse::Ok().json(user)
-    } else {
-        HttpResponse::NotFound().json(json!({
-            "message": "User not found"
-        }))
+            ErrorResponse::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                String::from("Internal server error"),
+            )
+        }
     }
 }
