@@ -26,7 +26,11 @@ WHERE id = $1
         .await
     }
 
-    pub async fn get_user_by_username_or_email(&self, key: &str) -> Result<UserWithPassword> {
+    pub async fn get_user_by_username_or_email(
+        &self,
+        username: &str,
+        email: &str,
+    ) -> Result<UserWithPassword> {
         sqlx::query_as::<Postgres, UserWithPassword>(
             "
 SELECT *
@@ -34,8 +38,30 @@ FROM posterior.users
 WHERE username = $1 OR email = $2
 ",
         )
-        .bind(key)
-        .bind(key)
+        .bind(username)
+        .bind(email)
+        .fetch_one(&self.pool)
+        .await
+    }
+
+    pub async fn insert_user(
+        &self,
+        username: &str,
+        name: &str,
+        email: &str,
+        hash: &str,
+    ) -> Result<UserWithPassword> {
+        sqlx::query_as(
+            "
+INSERT INTO posterior.users (username, name, email, password)
+VALUES($1, $2, $3, $4)
+RETURNING *
+",
+        )
+        .bind(username)
+        .bind(name)
+        .bind(email)
+        .bind(hash)
         .fetch_one(&self.pool)
         .await
     }
