@@ -28,9 +28,9 @@ impl GetSelfResponse {
     }
 }
 
-pub struct LoginResponse;
+pub struct TokenResponse;
 
-impl LoginResponse {
+impl TokenResponse {
     pub fn new(token: String) -> HttpResponse {
         HttpResponse::Created().json(json!({ "token": token }))
     }
