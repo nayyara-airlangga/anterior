@@ -1,5 +1,11 @@
 pub enum LoginError {
     InternalServerError,
     IncorrectPassword,
-    NotFound,
+    UserNotFound,
+}
+
+pub enum RegisterError<'a> {
+    InternalServerError,
+    BadRequest(&'a str),
+    UserAlreadyExists,
 }
