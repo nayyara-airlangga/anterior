@@ -8,15 +8,13 @@ use actix_web::{
 };
 use futures::Future;
 use jsonwebtoken::TokenData;
-use sqlx::{Pool, Postgres};
 
 use crate::{
     errors::ErrorResponse,
     jwt::{handlers::decode_auth_token, payload::AuthToken},
-    models::user::User,
 };
 
-type DbPool = Pool<Postgres>;
+use super::{errors::GetSelfError, UserService};
 
 pub fn validate_user_token<S, B>(
     req: ServiceRequest,
@@ -35,8 +33,8 @@ where
     S::Future: 'static,
     B: 'static,
 {
-    let unauthorized_res = ErrorResponse::new(StatusCode::UNAUTHORIZED, "Unauthenticated request")
-        .map_into_right_body();
+    let unauthorized_res =
+        ErrorResponse::new(StatusCode::UNAUTHORIZED, "Unauthorized request").map_into_right_body();
 
     match req.headers().get("Authorization") {
         Some(header) => {
@@ -116,7 +114,7 @@ where
             }
         };
 
-        let pool = new_http_req.app_data::<web::Data<DbPool>>().unwrap();
+        let user_service = new_http_req.app_data::<web::Data<UserService>>().unwrap();
 
         let AuthToken { id, .. } = new_http_req
             .extensions()
@@ -125,31 +123,20 @@ where
             .claims;
         let id = id as i32;
 
-        let user = match sqlx::query_as::<Postgres, User>(
-            "
-SELECT id, username, name, email, created_at FROM posterior.users
-WHERE id = $1
-",
-        )
-        .bind(&id)
-        .fetch_optional(&***pool)
-        .await
-        {
-            Ok(query) => query,
-            Err(err) => {
-                log::error!("{err}");
+        let user = match user_service.get_self(id).await {
+            Ok(user) => user,
+            Err(GetSelfError::UserNotFound) => {
+                return Ok(ServiceResponse::new(new_http_req, not_found_res))
+            }
+            Err(GetSelfError::InternalServerError) => {
                 return Ok(ServiceResponse::new(new_http_req, internal_server_err_res));
             }
         };
 
-        if let Some(user) = user {
-            if user.username == super_username && user.email == super_email {
-                res_fut.await.map(ServiceResponse::map_into_left_body)
-            } else {
-                Ok(ServiceResponse::new(new_http_req, forbidden_res))
-            }
+        if user.username == super_username && user.email == super_email {
+            res_fut.await.map(ServiceResponse::map_into_left_body)
         } else {
-            Ok(ServiceResponse::new(new_http_req, not_found_res))
+            Ok(ServiceResponse::new(new_http_req, forbidden_res))
         }
     })
 }
