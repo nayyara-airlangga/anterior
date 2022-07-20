@@ -1,4 +1,5 @@
 pub mod api;
+pub mod blog;
 pub mod crypto;
 pub mod db;
 pub mod errors;

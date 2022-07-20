@@ -5,6 +5,7 @@ use sqlx::PgPool;
 
 use crate::{
     api::{cors::config_cors, routes::routes},
+    blog::{BlogRepository, BlogService},
     users::{UserRepository, UserService},
 };
 
@@ -19,7 +20,10 @@ pub async fn run_server(pool: PgPool) -> Result<()> {
     });
 
     let user_repository = UserRepository::new(pool.clone());
-    let user_service = UserService::new(user_repository.clone());
+    let blog_repository = BlogRepository::new(pool.clone());
+
+    let user_service = UserService::new(user_repository);
+    let blog_service = BlogService::new(blog_repository);
 
     let server = match HttpServer::new(move || {
         let cors = config_cors();
@@ -29,6 +33,7 @@ pub async fn run_server(pool: PgPool) -> Result<()> {
             .wrap(middleware::Logger::default())
             .app_data(web::Data::new(pool.clone()))
             .app_data(web::Data::new(user_service.clone()))
+            .app_data(web::Data::new(blog_service.clone()))
             .configure(routes)
     })
     .bind(format!("{host}:{port}"))
