@@ -6,7 +6,7 @@ use sqlx::{postgres::PgRow, Pool, Postgres, Row};
 use crate::{
     api::posts::payloads::create_post::CreatePostPayload,
     jwt::payload::AuthToken,
-    models::{post::PostWithAuthor, user::User},
+    models::{post::Post, user::User},
 };
 
 type DbPool = Pool<Postgres>;
@@ -48,7 +48,7 @@ LEFT JOIN posterior.users AS users ON post.author_id = users.id
     .bind(&body.content)
     .bind(&published)
     .bind(&id)
-    .map(|row: PgRow| PostWithAuthor {
+    .map(|row: PgRow| Post {
         id: row.get(0),
         title: row.get(1),
         headline: row.get(2),

@@ -2,7 +2,7 @@ use actix_web::{web, HttpResponse};
 use serde_json::json;
 use sqlx::{postgres::PgRow, Pool, Postgres, Row};
 
-use crate::models::{post::PostWithAuthor, user::User};
+use crate::models::{post::Post, user::User};
 
 type DbPool = Pool<Postgres>;
 
@@ -14,7 +14,7 @@ LEFT JOIN posterior.users AS users
 ON posts.author_id = users.id
 ORDER BY posts.created_at DESC, edited_at DESC, title ASC
 ",
-    ).map(|row: PgRow| PostWithAuthor {
+    ).map(|row: PgRow| Post {
         id: row.get(0),
         title: row.get(1),
         headline: row.get(2),
