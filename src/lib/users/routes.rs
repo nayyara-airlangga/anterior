@@ -1,7 +1,7 @@
 use actix_web::{guard, web};
 
 use super::{
-    handlers::{get_self, login},
+    handlers::{get_self, login, register},
     middlewares::validate_user_token,
 };
 
@@ -19,12 +19,13 @@ pub fn users_routes(cfg: &mut web::ServiceConfig) {
                         .guard(guard::Header("Content-Type", "application/json"))
                         .to(login),
                 ),
-            ), // .service(
-               //     web::resource("/register").route(
-               //         web::post()
-               //             .guard(guard::Header("Content-Type", "application/json"))
-               //             .to(register),
-               //     ),
-               // ),
+            )
+            .service(
+                web::resource("/register").route(
+                    web::post()
+                        .guard(guard::Header("Content-Type", "application/json"))
+                        .to(register),
+                ),
+            ),
     );
 }
