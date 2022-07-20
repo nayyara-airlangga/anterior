@@ -13,7 +13,6 @@ impl UserRepository {
     }
 
     pub async fn get_user_by_id(&self, id: i32) -> Result<User> {
-        log::info!("{id}");
         sqlx::query_as::<Postgres, User>(
             "
 SELECT id, username, name, email, created_at
