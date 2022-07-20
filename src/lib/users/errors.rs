@@ -1,3 +1,8 @@
+pub enum GetSelfError {
+    InternalServerError,
+    UserNotFound,
+}
+
 pub enum LoginError {
     InternalServerError,
     IncorrectPassword,

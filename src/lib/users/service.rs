@@ -8,7 +8,7 @@ use crate::{
 };
 
 use super::{
-    errors::{LoginError, RegisterError},
+    errors::{GetSelfError, LoginError, RegisterError},
     payloads::{LoginPayload, RegisterPayload},
     repository::UserRepository,
 };
@@ -23,10 +23,16 @@ impl UserService {
         UserService { repository }
     }
 
-    pub async fn get_self(&self, id: i32) -> Result<User, sqlx::Error> {
-        let user = self.repository.get_user_by_id(id).await?;
+    pub async fn get_self(&self, id: i32) -> Result<User, GetSelfError> {
+        match self.repository.get_user_by_id(id).await {
+            Ok(user) => Ok(user),
+            Err(sqlx::Error::RowNotFound) => Err(GetSelfError::UserNotFound),
+            Err(err) => {
+                log::error!("{err}");
 
-        Ok(user)
+                Err(GetSelfError::InternalServerError)
+            }
+        }
     }
 
     fn get_user_token_exp_seconds(&self, remember_me: &Option<bool>) -> i64 {
