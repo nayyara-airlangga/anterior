@@ -3,7 +3,7 @@ version: "3.9"
 services:
   postgres:
     image: postgres
-    container_name: postgres
+    container_name: posterior-postgres
     deploy:
       restart_policy:
         condition: on-failure
