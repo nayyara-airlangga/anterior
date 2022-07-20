@@ -1,4 +1,3 @@
-pub mod auth;
 pub mod cors;
 pub mod posts;
 pub mod routes;
