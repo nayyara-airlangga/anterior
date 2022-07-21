@@ -1,7 +1,7 @@
 use actix_web::HttpResponse;
 use serde::Deserialize;
 
-use crate::models::PostsWithMeta;
+use crate::models::{PostDetail, PostsWithMeta};
 
 #[derive(Deserialize, Debug)]
 #[serde(default)]
@@ -22,5 +22,12 @@ pub struct GetPostsResponse;
 impl GetPostsResponse {
     pub fn new(posts: PostsWithMeta) -> HttpResponse {
         HttpResponse::Ok().json(posts)
+    }
+}
+
+pub struct GetPostDetailResponse;
+impl GetPostDetailResponse {
+    pub fn new(post: PostDetail) -> HttpResponse {
+        HttpResponse::Ok().json(post)
     }
 }
