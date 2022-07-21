@@ -3,7 +3,7 @@ use serde::Serialize;
 #[derive(Serialize)]
 pub struct Pagination {
     pub has_next: bool,
-    pub next_page: Option<i32>,
+    pub cursor: Option<i32>,
 }
 
 #[derive(Serialize)]
