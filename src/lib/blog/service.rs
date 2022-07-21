@@ -18,9 +18,11 @@ impl BlogService {
         &self,
         query: web::Query<GetPostsQuery>,
     ) -> Result<PostsWithMeta, GetPostsError> {
-        let offset = (query.page - 1) * query.limit;
-
-        let mut posts = match self.repository.get_posts(query.limit + 1, offset).await {
+        let mut posts = match self
+            .repository
+            .get_posts(query.limit + 1, query.cursor)
+            .await
+        {
             Ok(posts) => posts,
             Err(err) => {
                 log::error!("{err}");
@@ -36,12 +38,17 @@ impl BlogService {
             posts = posts.into_iter().take(query.limit as usize).collect();
         }
 
+        let post_count = posts.len();
+
+        let cursor = if posts.len() > 0 {
+            Some(posts.get(post_count - 1).unwrap().id)
+        } else {
+            None
+        };
+
         let metadata = Metadata {
             count: posts.len() as i32,
-            pagination: Pagination {
-                has_next,
-                next_page: if has_next { Some(query.page + 1) } else { None },
-            },
+            pagination: Pagination { has_next, cursor },
         };
 
         Ok(PostsWithMeta::new(posts, metadata))
