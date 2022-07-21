@@ -33,8 +33,8 @@ impl From<PgRow> for Post {
 
 #[derive(Serialize)]
 pub struct PostsWithMeta {
-    pub posts: Vec<Post>,
     pub metadata: Metadata,
+    pub posts: Vec<Post>,
 }
 
 impl PostsWithMeta {
