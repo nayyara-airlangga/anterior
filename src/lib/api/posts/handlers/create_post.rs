@@ -4,9 +4,7 @@ use serde_json::json;
 use sqlx::{postgres::PgRow, Pool, Postgres, Row};
 
 use crate::{
-    api::posts::payloads::create_post::CreatePostPayload,
-    jwt::payload::AuthToken,
-    models::{Post, User},
+    api::posts::payloads::create_post::CreatePostPayload, jwt::payload::AuthToken, models::Post,
 };
 
 type DbPool = Pool<Postgres>;
@@ -37,7 +35,7 @@ INSERT INTO posterior.posts (title, slug, headline, content, published, author_i
 VALUES($1, $2, $3, $4, $5, $6)
 RETURNING *
 )
-SELECT post.id, title, headline, slug, content, published, post.created_at, edited_at, published_at, author_id, users.id, username, name, email, users.created_at
+SELECT post.id, title, headline, slug, published, post.created_at, edited_at, published_at, author_id 
 FROM post
 LEFT JOIN posterior.users AS users ON post.author_id = users.id
 ",
@@ -49,23 +47,14 @@ LEFT JOIN posterior.users AS users ON post.author_id = users.id
     .bind(&published)
     .bind(&id)
     .map(|row: PgRow| Post {
-        id: row.get(0),
-        title: row.get(1),
-        headline: row.get(2),
-        slug: row.get(3),
-        content: row.get(4),
-        published: row.get(5),
-        created_at: row.get(6),
-        edited_at: row.get(7),
-        published_at: row.get(8),
-        author_id: row.get(9),
-            author: User {
-                id: row.get(10),
-                username: row.get(11),
-                name: row.get(12),
-                email: row.get(13),
-                created_at: row.get(14)
-            }
+        id: row.get("id"),
+        title: row.get("title"),
+        headline: row.get("headline"),
+        slug: row.get("slug"),
+        published: row.get("published"),
+        created_at: row.get("created_at"),
+        edited_at: row.get("edited_at"),
+        published_at: row.get("published_at"),
     })
     .fetch_optional(&**pool)
     .await
