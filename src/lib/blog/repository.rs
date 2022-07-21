@@ -40,17 +40,17 @@ LIMIT $1
         Ok(posts)
     }
 
-    pub async fn get_post_by_id(&self, id: i32) -> Result<PostDetail> {
+    pub async fn get_post_by_slug(&self, slug: &str) -> Result<PostDetail> {
         let query_str = r#"
-SELECT posts.id "p_id", title, headline, slug, published, posts.created_at "p_created_at", edited_at, published_at, author_id, users.id "u_id", username, name, email, users.created_at "u_created_at"
+SELECT posts.id "p_id", title, headline, slug, published, content, posts.created_at "p_created_at", edited_at, published_at, author_id, users.id "u_id", username, name, email, users.created_at "u_created_at"
 FROM posterior.posts AS posts
 LEFT JOIN posterior.users AS users
 ON posts.author_id = users.id
-WHERE posts.id = $1
+WHERE posts.slug = $1
         "#;
 
         let post = sqlx::query::<Postgres>(query_str)
-            .bind(id)
+            .bind(slug)
             .fetch_one(&self.pool)
             .await?;
 

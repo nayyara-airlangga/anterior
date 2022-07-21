@@ -1,8 +1,12 @@
 use actix_web::web;
 
-use crate::models::{Metadata, Pagination, PostsWithMeta};
+use crate::models::{Metadata, Pagination, PostDetail, PostsWithMeta};
 
-use super::{errors::GetPostsError, payloads::GetPostsQuery, repository::BlogRepository};
+use super::{
+    errors::{GetPostDetailError, GetPostsError},
+    payloads::GetPostsQuery,
+    repository::BlogRepository,
+};
 
 #[derive(Clone)]
 pub struct BlogService {
@@ -51,5 +55,17 @@ impl BlogService {
         };
 
         Ok(PostsWithMeta::new(posts, metadata))
+    }
+
+    pub async fn get_post_detail(&self, slug: String) -> Result<PostDetail, GetPostDetailError> {
+        match self.repository.get_post_by_slug(&slug).await {
+            Ok(post) => Ok(post),
+            Err(sqlx::Error::RowNotFound) => Err(GetPostDetailError::PostNotFound),
+            Err(err) => {
+                log::error!("{err}");
+
+                Err(GetPostDetailError::InternalServerError)
+            }
+        }
     }
 }
