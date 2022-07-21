@@ -1,4 +1,4 @@
-use sqlx::{PgPool, Postgres, Result};
+use sqlx::{postgres::PgRow, PgPool, Postgres, Result, Row};
 
 use crate::models::{Post, PostDetail};
 
@@ -55,5 +55,21 @@ WHERE posts.slug = $1
             .await?;
 
         Ok(post.into())
+    }
+
+    pub async fn get_post_count_with_duplicate_slugs(&self, slug: &str) -> Result<i32> {
+        let query_str = r#"
+SELECT COUNT(posts.id)
+FROM posterior.posts AS posts
+WHERE posts.slug LIKE $1
+        "#;
+
+        let count = sqlx::query::<Postgres>(query_str)
+            .bind(&format!("'{}%'", slug))
+            .map(|row: PgRow| row.get("count"))
+            .fetch_one(&self.pool)
+            .await?;
+
+        Ok(count)
     }
 }
