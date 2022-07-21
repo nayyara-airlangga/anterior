@@ -7,6 +7,7 @@ pub enum GetPostDetailError {
     PostNotFound,
 }
 
-pub enum CreatePostError {
+pub enum CreatePostError<'a> {
     InternalServerError,
+    BadRequest(&'a str),
 }
