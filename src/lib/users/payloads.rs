@@ -2,7 +2,7 @@ use actix_web::HttpResponse;
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::models::user::User;
+use crate::models::User;
 
 #[derive(Deserialize)]
 pub struct LoginPayload {

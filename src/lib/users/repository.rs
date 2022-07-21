@@ -1,6 +1,6 @@
 use sqlx::{Pool, Postgres, Result};
 
-use crate::models::user::{User, UserWithPassword};
+use crate::models::{User, UserWithPassword};
 
 #[derive(Clone)]
 pub struct UserRepository {

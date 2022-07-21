@@ -1,4 +1,4 @@
-use crate::models::post::Post;
+use crate::models::Post;
 
 use super::{errors::GetPostsError, repository::BlogRepository};
 

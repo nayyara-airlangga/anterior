@@ -4,7 +4,7 @@ use fancy_regex::Regex;
 use crate::{
     crypto::hash::{create_hash, verify_hash},
     jwt::{handlers::create_auth_token, payload::AuthToken},
-    models::user::User,
+    models::User,
 };
 
 use super::{

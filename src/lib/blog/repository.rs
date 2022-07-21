@@ -1,6 +1,6 @@
 use sqlx::{PgPool, Postgres, Result};
 
-use crate::models::post::Post;
+use crate::models::Post;
 
 #[derive(Clone)]
 pub struct BlogRepository {
