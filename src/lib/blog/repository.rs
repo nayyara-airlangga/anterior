@@ -2,6 +2,8 @@ use sqlx::{postgres::PgRow, PgPool, Postgres, Result, Row};
 
 use crate::models::{Post, PostDetail};
 
+use super::payloads::CreatePostPayload;
+
 #[derive(Clone)]
 pub struct BlogRepository {
     pub pool: PgPool,
@@ -57,7 +59,7 @@ WHERE posts.slug = $1
         Ok(post.into())
     }
 
-    pub async fn get_post_count_with_duplicate_slugs(&self, slug: &str) -> Result<i32> {
+    pub async fn get_post_count_with_duplicate_slugs(&self, slug: &str) -> Result<i64> {
         let query_str = r#"
 SELECT COUNT(posts.id)
 FROM posterior.posts AS posts
@@ -65,11 +67,41 @@ WHERE posts.slug LIKE $1
         "#;
 
         let count = sqlx::query::<Postgres>(query_str)
-            .bind(&format!("'{}%'", slug))
+            .bind(&format!(r#"{}%"#, slug))
             .map(|row: PgRow| row.get("count"))
             .fetch_one(&self.pool)
             .await?;
 
         Ok(count)
+    }
+
+    pub async fn insert_post(
+        &self,
+        body: CreatePostPayload,
+        slug: &str,
+        author_id: i32,
+    ) -> Result<()> {
+        let query_str = r#"
+INSERT INTO posterior.posts (title, slug, headline, content, published, author_id)
+VALUES($1, $2, $3, $4, $5, $6)
+        "#;
+
+        let published = if let Some(published) = body.published {
+            published
+        } else {
+            false
+        };
+
+        sqlx::query::<Postgres>(query_str)
+            .bind(&body.title)
+            .bind(&slug)
+            .bind(&body.headline)
+            .bind(&body.content)
+            .bind(&published)
+            .bind(&author_id)
+            .execute(&self.pool)
+            .await?;
+
+        Ok(())
     }
 }
