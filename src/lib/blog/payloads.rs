@@ -33,6 +33,14 @@ impl GetPostDetailResponse {
     }
 }
 
+#[derive(Deserialize)]
+pub struct CreatePostPayload {
+    pub title: String,
+    pub headline: String,
+    pub content: String,
+    pub published: Option<bool>,
+}
+
 pub struct CreatePostResponse;
 impl CreatePostResponse {
     pub fn new() -> HttpResponse {
