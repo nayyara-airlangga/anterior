@@ -3,8 +3,8 @@ use actix_web::web;
 use crate::models::{Metadata, Pagination, PostDetail, PostsWithMeta};
 
 use super::{
-    errors::{GetPostDetailError, GetPostsError},
-    payloads::GetPostsQuery,
+    errors::{CreatePostError, GetPostDetailError, GetPostsError},
+    payloads::{CreatePostPayload, GetPostsQuery},
     repository::BlogRepository,
 };
 
@@ -65,6 +65,56 @@ impl BlogService {
                 log::error!("{err}");
 
                 Err(GetPostDetailError::InternalServerError)
+            }
+        }
+    }
+
+    pub async fn create_post(
+        &self,
+        author_id: i32,
+        body: web::Json<CreatePostPayload>,
+    ) -> Result<(), CreatePostError> {
+        if body.title.trim().len() == 0 {
+            return Err(CreatePostError::BadRequest("Title can't be empty"));
+        }
+
+        if body.headline.trim().len() == 0 {
+            return Err(CreatePostError::BadRequest("Headline can't be empty"));
+        }
+
+        if body.content.trim().len() == 0 {
+            return Err(CreatePostError::BadRequest("Content can't be empty"));
+        }
+
+        let mut slug = slug::slugify(&body.title);
+
+        let count = match self
+            .repository
+            .get_post_count_with_duplicate_slugs(&slug)
+            .await
+        {
+            Ok(count) => count,
+            Err(err) => {
+                log::error!("{err}");
+
+                return Err(CreatePostError::InternalServerError);
+            }
+        };
+
+        if count > 0 {
+            slug.push_str(&format!("-{}", count));
+        }
+
+        match self
+            .repository
+            .insert_post(body.into_inner(), &slug, author_id)
+            .await
+        {
+            Ok(_) => Ok(()),
+            Err(err) => {
+                log::error!("{err}");
+
+                Err(CreatePostError::InternalServerError)
             }
         }
     }
