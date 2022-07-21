@@ -31,14 +31,14 @@ impl BlogService {
             }
         };
 
-        let post_count = posts.len();
         let mut has_next = false;
 
-        if post_count > query.limit as usize {
+        if posts.len() > query.limit as usize {
             has_next = true;
             posts = posts.into_iter().take(query.limit as usize).collect();
         }
 
+        let post_count = posts.len();
         let cursor = if post_count > 0 {
             Some(posts.get(post_count - 1).unwrap().id)
         } else {
