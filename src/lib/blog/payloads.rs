@@ -1,5 +1,6 @@
 use actix_web::HttpResponse;
 use serde::Deserialize;
+use serde_json::json;
 
 use crate::models::{PostDetail, PostsWithMeta};
 
@@ -29,5 +30,14 @@ pub struct GetPostDetailResponse;
 impl GetPostDetailResponse {
     pub fn new(post: PostDetail) -> HttpResponse {
         HttpResponse::Ok().json(post)
+    }
+}
+
+pub struct CreatePostResponse;
+impl CreatePostResponse {
+    pub fn new() -> HttpResponse {
+        HttpResponse::Created().json(json!({
+            "message": "Post created successfully"
+        }))
     }
 }
