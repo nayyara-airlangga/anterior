@@ -2,7 +2,7 @@ use actix_web::{web, HttpResponse};
 use serde_json::json;
 use sqlx::{postgres::PgRow, Pool, Postgres, Row};
 
-use crate::models::{post::Post, user::User};
+use crate::models::{Post, User};
 
 type DbPool = Pool<Postgres>;
 

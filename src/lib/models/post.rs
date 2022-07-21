@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgRow, Row};
 
-use super::user::User;
+use super::{Metadata, User};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Post {
@@ -41,5 +41,17 @@ impl From<PgRow> for Post {
                 created_at: row.get("u_created_at"),
             },
         }
+    }
+}
+
+#[derive(Serialize)]
+pub struct PostsWithMeta {
+    pub posts: Vec<Post>,
+    pub metadata: Metadata,
+}
+
+impl PostsWithMeta {
+    pub fn new(posts: Vec<Post>, metadata: Metadata) -> Self {
+        Self { posts, metadata }
     }
 }

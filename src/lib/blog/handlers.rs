@@ -10,9 +10,9 @@ use super::{
 
 pub async fn get_posts(
     service: web::Data<BlogService>,
-    queries: web::Query<GetPostsQuery>,
+    query: web::Query<GetPostsQuery>,
 ) -> HttpResponse {
-    match service.as_ref().get_posts().await {
+    match service.as_ref().get_posts(query).await {
         Ok(posts) => GetPostsResponse::new(posts),
         Err(err) => match err {
             GetPostsError::InternalServerError => {

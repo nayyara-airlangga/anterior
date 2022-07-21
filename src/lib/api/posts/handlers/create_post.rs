@@ -6,7 +6,7 @@ use sqlx::{postgres::PgRow, Pool, Postgres, Row};
 use crate::{
     api::posts::payloads::create_post::CreatePostPayload,
     jwt::payload::AuthToken,
-    models::{post::Post, user::User},
+    models::{Post, User},
 };
 
 type DbPool = Pool<Postgres>;
