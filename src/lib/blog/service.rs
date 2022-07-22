@@ -86,11 +86,9 @@ impl BlogService {
             return Err(CreatePostError::BadRequest("Content can't be empty"));
         }
 
-        let mut slug = slug::slugify(&body.title);
-
         let count = match self
             .repository
-            .get_post_count_with_duplicate_slugs(&slug)
+            .get_post_count_with_duplicate_title(&body.title)
             .await
         {
             Ok(count) => count,
@@ -100,6 +98,8 @@ impl BlogService {
                 return Err(CreatePostError::InternalServerError);
             }
         };
+
+        let mut slug = slug::slugify(&body.title);
 
         if count > 0 {
             slug.push_str(&format!("-{}", count));

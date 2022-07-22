@@ -59,15 +59,15 @@ WHERE posts.slug = $1
         Ok(post.into())
     }
 
-    pub async fn get_post_count_with_duplicate_slugs(&self, slug: &str) -> Result<i64> {
+    pub async fn get_post_count_with_duplicate_title(&self, title: &str) -> Result<i64> {
         let query_str = r#"
 SELECT COUNT(posts.id)
 FROM posterior.posts AS posts
-WHERE posts.slug LIKE $1
+WHERE lower(posts.title) = lower($1)
         "#;
 
         let count = sqlx::query::<Postgres>(query_str)
-            .bind(&format!(r#"{}%"#, slug))
+            .bind(title)
             .map(|row: PgRow| row.get("count"))
             .fetch_one(&self.pool)
             .await?;
