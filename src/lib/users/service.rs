@@ -9,7 +9,7 @@ use crate::{
 
 use super::{
     errors::{GetSelfError, LoginError, RegisterError},
-    payloads::{LoginPayload, RegisterPayload},
+    payloads::{LoginRequest, RegisterRequest},
     repository::UserRepository,
 };
 
@@ -52,7 +52,7 @@ impl UserService {
         }
     }
 
-    pub async fn login(&self, body: web::Json<LoginPayload>) -> Result<String, LoginError> {
+    pub async fn login(&self, body: web::Json<LoginRequest>) -> Result<String, LoginError> {
         let user = match self
             .repository
             .get_user_by_username_or_email(&body.username, &body.username)
@@ -87,7 +87,7 @@ impl UserService {
 
     pub async fn register(
         &self,
-        body: web::Json<RegisterPayload>,
+        body: web::Json<RegisterRequest>,
     ) -> Result<String, RegisterError> {
         let _ = match self
             .repository

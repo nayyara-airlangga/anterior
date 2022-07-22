@@ -6,7 +6,7 @@ use crate::{errors::ErrorResponse, jwt::payload::AuthToken};
 use super::{
     errors::{CreatePostError, GetPostDetailError, GetPostsError},
     payloads::{
-        CreatePostPayload, CreatePostResponse, GetPostDetailResponse, GetPostsQuery,
+        CreatePostRequest, CreatePostResponse, GetPostDetailResponse, GetPostsQuery,
         GetPostsResponse,
     },
     BlogService,
@@ -47,7 +47,7 @@ pub async fn get_post_detail(
 pub async fn create_post(
     req: HttpRequest,
     service: web::Data<BlogService>,
-    body: web::Json<CreatePostPayload>,
+    body: web::Json<CreatePostRequest>,
 ) -> HttpResponse {
     let AuthToken { id: author_id, .. } = req
         .extensions()

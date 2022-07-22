@@ -5,7 +5,7 @@ use crate::{errors::ErrorResponse, jwt::payload::AuthToken};
 
 use super::{
     errors::{GetSelfError, LoginError, RegisterError},
-    payloads::{GetSelfResponse, LoginPayload, RegisterPayload, TokenResponse},
+    payloads::{GetSelfResponse, LoginRequest, RegisterRequest, TokenResponse},
     UserService,
 };
 
@@ -28,7 +28,7 @@ pub async fn get_self(req: HttpRequest, service: web::Data<UserService>) -> Http
     }
 }
 
-pub async fn login(body: web::Json<LoginPayload>, service: web::Data<UserService>) -> HttpResponse {
+pub async fn login(body: web::Json<LoginRequest>, service: web::Data<UserService>) -> HttpResponse {
     match service.as_ref().login(body).await {
         Ok(token) => TokenResponse::new(token),
         Err(LoginError::UserNotFound) => {
@@ -44,7 +44,7 @@ pub async fn login(body: web::Json<LoginPayload>, service: web::Data<UserService
 }
 
 pub async fn register(
-    body: web::Json<RegisterPayload>,
+    body: web::Json<RegisterRequest>,
     service: web::Data<UserService>,
 ) -> HttpResponse {
     match service.as_ref().register(body).await {

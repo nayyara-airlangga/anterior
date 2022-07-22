@@ -2,7 +2,7 @@ use sqlx::{postgres::PgRow, PgPool, Postgres, Result, Row};
 
 use crate::models::{Post, PostDetail};
 
-use super::payloads::CreatePostPayload;
+use super::payloads::CreatePostRequest;
 
 #[derive(Clone)]
 pub struct BlogRepository {
@@ -96,7 +96,7 @@ WHERE lower(posts.title) = lower($1)
 
     pub async fn insert_post(
         &self,
-        body: CreatePostPayload,
+        body: CreatePostRequest,
         slug: &str,
         author_id: i32,
     ) -> Result<()> {

@@ -5,14 +5,14 @@ use serde_json::json;
 use crate::models::User;
 
 #[derive(Deserialize)]
-pub struct LoginPayload {
+pub struct LoginRequest {
     pub username: String,
     pub password: String,
     pub remember_me: Option<bool>,
 }
 
 #[derive(Deserialize)]
-pub struct RegisterPayload {
+pub struct RegisterRequest {
     pub username: String,
     pub email: String,
     pub name: String,

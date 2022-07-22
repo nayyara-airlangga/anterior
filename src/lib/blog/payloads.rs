@@ -34,7 +34,7 @@ impl GetPostDetailResponse {
 }
 
 #[derive(Deserialize)]
-pub struct CreatePostPayload {
+pub struct CreatePostRequest {
     pub title: String,
     pub headline: String,
     pub content: String,

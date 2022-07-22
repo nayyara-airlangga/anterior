@@ -4,7 +4,7 @@ use crate::models::{Metadata, Pagination, PostDetail, PostsWithMeta};
 
 use super::{
     errors::{CreatePostError, GetPostDetailError, GetPostsError},
-    payloads::{CreatePostPayload, GetPostsQuery},
+    payloads::{CreatePostRequest, GetPostsQuery},
     repository::BlogRepository,
 };
 
@@ -73,7 +73,7 @@ impl BlogService {
     pub async fn create_post(
         &self,
         author_id: i32,
-        body: web::Json<CreatePostPayload>,
+        body: web::Json<CreatePostRequest>,
     ) -> Result<(), CreatePostError> {
         if body.title.trim().len() == 0 {
             return Err(CreatePostError::BadRequest("Title can't be empty"));
