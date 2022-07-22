@@ -18,6 +18,9 @@ pub async fn get_posts(
 ) -> HttpResponse {
     match service.as_ref().get_posts(query).await {
         Ok(posts) => GetPostsResponse::new(posts),
+        Err(GetPostsError::InvalidCursor) => {
+            ErrorResponse::new(StatusCode::BAD_REQUEST, "Invalid cursor")
+        }
         Err(GetPostsError::InternalServerError) => {
             ErrorResponse::new(StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
         }

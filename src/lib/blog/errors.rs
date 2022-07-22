@@ -1,5 +1,6 @@
 pub enum GetPostsError {
     InternalServerError,
+    InvalidCursor,
 }
 
 pub enum GetPostDetailError {

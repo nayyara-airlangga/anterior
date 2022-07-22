@@ -28,6 +28,7 @@ impl BlogService {
             .await
         {
             Ok(posts) => posts,
+            Err(sqlx::Error::RowNotFound) => return Err(GetPostsError::InvalidCursor),
             Err(err) => {
                 log::error!("{err}");
 
