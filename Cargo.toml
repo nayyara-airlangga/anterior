@@ -8,6 +8,10 @@ edition = "2021"
 [lib]
 path = "src/lib/mod.rs"
 
+[[bin]]
+name = "posterior"
+path = "src/bin/main.rs"
+
 [dependencies]
 actix-cors = "0.6.1"
 actix-web = "4.1.0"

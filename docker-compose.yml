@@ -10,7 +10,7 @@ services:
       resources:
         limits:
           cpus: "0.1"
-          memory: "2g"
+          memory: "300m"
     environment:
       - POSTGRES_DB=${DATABASE_NAME}
       - POSTGRES_USER=${DATABASE_USER}
