@@ -4,10 +4,10 @@ run:
 watch:
 	cargo watch -x run
 
-dev-up:
+up:
 	docker compose up -d
 
-dev-down:
+down:
 	docker compose down
 
 logs:
