@@ -1,6 +1,29 @@
 version: "3.9"
 
 services:
+  posterior:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: posterior
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: "500m"
+    env_file:
+      - .env
+    volumes:
+      - posterior:/posterior
+    ports:
+      - 7000:7000
+    networks:
+      - posterior
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres
     container_name: posterior-postgres
@@ -20,11 +43,12 @@ services:
     ports:
       - "9000:5432"
     networks:
-       - postgres 
+       - posterior
 
 networks:
-  postgres:
+  posterior:
     driver: bridge
       
 volumes:
+  posterior:
   postgres:
