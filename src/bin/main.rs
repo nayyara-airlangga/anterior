@@ -3,7 +3,7 @@ use actix_web;
 use dotenv::dotenv;
 use sqlx::error::BoxDynError;
 
-use osiris::{
+use libosiris::{
     api::server::run_server,
     db::{connection::create_connection, migrate::apply_migrations},
     logger::init_logger,

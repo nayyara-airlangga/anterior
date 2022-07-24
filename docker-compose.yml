@@ -15,8 +15,6 @@ services:
           memory: "500m"
     env_file:
       - .env
-    volumes:
-      - osiris:/osiris
     ports:
       - 7000:7000
     networks:
@@ -50,5 +48,4 @@ networks:
     driver: bridge
       
 volumes:
-  osiris:
   postgres:

@@ -3,7 +3,7 @@ use std::env;
 use log::info;
 
 pub fn init_logger() {
-    env::set_var("RUST_LOG", "osiris,main");
+    env::set_var("RUST_LOG", "libosiris,osiris");
 
     env_logger::init();
 
