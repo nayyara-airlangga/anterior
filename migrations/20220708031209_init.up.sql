@@ -1,6 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS "posterior";
+CREATE SCHEMA IF NOT EXISTS "osiris";
 
-CREATE TABLE IF NOT EXISTS "posterior"."users" (
+CREATE TABLE IF NOT EXISTS "osiris"."users" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "email" varchar(255) UNIQUE NOT NULL,
   "username" varchar(255) UNIQUE NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "posterior"."users" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE IF NOT EXISTS "posterior"."posts" (
+CREATE TABLE IF NOT EXISTS "osiris"."posts" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "title" varchar(255) NOT NULL,
   "headline" varchar(1000) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS "posterior"."posts" (
   "author_id" int NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS "posterior"."comments" (
+CREATE TABLE IF NOT EXISTS "osiris"."comments" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "comment" text NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -32,24 +32,24 @@ CREATE TABLE IF NOT EXISTS "posterior"."comments" (
   "parent_id" int
 );
 
-CREATE INDEX IF NOT EXISTS users_id_idx ON "posterior"."users" ("id");
+CREATE INDEX IF NOT EXISTS users_id_idx ON "osiris"."users" ("id");
 
-CREATE INDEX IF NOT EXISTS users_username_idx ON "posterior"."users" ("username");
+CREATE INDEX IF NOT EXISTS users_username_idx ON "osiris"."users" ("username");
 
-CREATE INDEX IF NOT EXISTS users_name_idx ON "posterior"."users" ("name");
+CREATE INDEX IF NOT EXISTS users_name_idx ON "osiris"."users" ("name");
 
-CREATE INDEX IF NOT EXISTS posts_id_idx ON "posterior"."posts" ("id");
+CREATE INDEX IF NOT EXISTS posts_id_idx ON "osiris"."posts" ("id");
 
-CREATE INDEX IF NOT EXISTS posts_title_idx ON "posterior"."posts" ("title");
+CREATE INDEX IF NOT EXISTS posts_title_idx ON "osiris"."posts" ("title");
 
-CREATE INDEX IF NOT EXISTS posts_slug_idx ON "posterior"."posts" ("slug");
+CREATE INDEX IF NOT EXISTS posts_slug_idx ON "osiris"."posts" ("slug");
 
-CREATE INDEX IF NOT EXISTS comments_id_idx ON "posterior"."comments" ("id");
+CREATE INDEX IF NOT EXISTS comments_id_idx ON "osiris"."comments" ("id");
 
-ALTER TABLE "posterior"."posts" ADD FOREIGN KEY ("author_id") REFERENCES "posterior"."users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "osiris"."posts" ADD FOREIGN KEY ("author_id") REFERENCES "osiris"."users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
-ALTER TABLE "posterior"."comments" ADD FOREIGN KEY ("author_id") REFERENCES "posterior"."users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "osiris"."comments" ADD FOREIGN KEY ("author_id") REFERENCES "osiris"."users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
-ALTER TABLE "posterior"."comments" ADD FOREIGN KEY ("post_id") REFERENCES "posterior"."posts" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "osiris"."comments" ADD FOREIGN KEY ("post_id") REFERENCES "osiris"."posts" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
-ALTER TABLE "posterior"."comments" ADD FOREIGN KEY ("parent_id") REFERENCES "posterior"."comments" ("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "osiris"."comments" ADD FOREIGN KEY ("parent_id") REFERENCES "osiris"."comments" ("id") ON DELETE SET NULL ON UPDATE CASCADE;

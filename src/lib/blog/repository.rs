@@ -26,7 +26,7 @@ impl BlogRepository {
         let query_str = format!(
             r#"
 SELECT posts.id, title, headline, slug, published, posts.created_at, edited_at, published_at
-FROM posterior.posts AS posts
+FROM osiris.posts AS posts
 WHERE {}
 ORDER BY posts.created_at DESC, edited_at DESC, title ASC
 LIMIT $1
@@ -47,8 +47,8 @@ LIMIT $1
     pub async fn get_post_by_id(&self, id: i32) -> Result<PostDetail> {
         let query_str = r#"
 SELECT posts.id "p_id", title, headline, slug, published, content, posts.created_at "p_created_at", edited_at, published_at, author_id, users.id "u_id", username, name, email, users.created_at "u_created_at"
-FROM posterior.posts AS posts
-LEFT JOIN posterior.users AS users
+FROM osiris.posts AS posts
+LEFT JOIN osiris.users AS users
 ON posts.author_id = users.id
 WHERE posts.id = $1
         "#;
@@ -64,8 +64,8 @@ WHERE posts.id = $1
     pub async fn get_post_by_slug(&self, slug: &str) -> Result<PostDetail> {
         let query_str = r#"
 SELECT posts.id "p_id", title, headline, slug, published, content, posts.created_at "p_created_at", edited_at, published_at, author_id, users.id "u_id", username, name, email, users.created_at "u_created_at"
-FROM posterior.posts AS posts
-LEFT JOIN posterior.users AS users
+FROM osiris.posts AS posts
+LEFT JOIN osiris.users AS users
 ON posts.author_id = users.id
 WHERE posts.slug = $1
         "#;
@@ -81,7 +81,7 @@ WHERE posts.slug = $1
     pub async fn get_post_count_with_duplicate_title(&self, title: &str) -> Result<i64> {
         let query_str = r#"
 SELECT COUNT(posts.id)
-FROM posterior.posts AS posts
+FROM osiris.posts AS posts
 WHERE lower(posts.title) = lower($1)
         "#;
 
@@ -101,7 +101,7 @@ WHERE lower(posts.title) = lower($1)
         author_id: i32,
     ) -> Result<()> {
         let query_str = r#"
-INSERT INTO posterior.posts (title, slug, headline, content, published, author_id)
+INSERT INTO osiris.posts (title, slug, headline, content, published, author_id)
 VALUES($1, $2, $3, $4, $5, $6)
         "#;
 

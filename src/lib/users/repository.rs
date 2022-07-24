@@ -16,7 +16,7 @@ impl UserRepository {
         sqlx::query_as::<Postgres, User>(
             "
 SELECT id, username, name, email, created_at
-FROM posterior.users
+FROM osiris.users
 WHERE id = $1
 ",
         )
@@ -33,7 +33,7 @@ WHERE id = $1
         sqlx::query_as::<Postgres, UserWithPassword>(
             "
 SELECT *
-FROM posterior.users
+FROM osiris.users
 WHERE username = $1 OR email = $2
 ",
         )
@@ -52,7 +52,7 @@ WHERE username = $1 OR email = $2
     ) -> Result<UserWithPassword> {
         sqlx::query_as(
             "
-INSERT INTO posterior.users (username, name, email, password)
+INSERT INTO osiris.users (username, name, email, password)
 VALUES($1, $2, $3, $4)
 RETURNING *
 ",
