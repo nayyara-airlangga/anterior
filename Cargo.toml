@@ -1,5 +1,5 @@
 [package]
-name = "posterior"
+name = "osiris"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,7 +9,7 @@ edition = "2021"
 path = "src/lib/mod.rs"
 
 [[bin]]
-name = "posterior"
+name = "osiris"
 path = "src/bin/main.rs"
 
 [dependencies]

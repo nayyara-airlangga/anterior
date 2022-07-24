@@ -1,11 +1,11 @@
 version: "3.9"
 
 services:
-  posterior:
+  osiris:
     build:
       context: ./
       dockerfile: Dockerfile
-    container_name: posterior
+    container_name: osiris
     deploy:
       restart_policy:
         condition: on-failure
@@ -16,17 +16,17 @@ services:
     env_file:
       - .env
     volumes:
-      - posterior:/posterior
+      - osiris:/osiris
     ports:
       - 7000:7000
     networks:
-      - posterior
+      - osiris
     depends_on:
       - postgres
 
   postgres:
     image: postgres
-    container_name: posterior-postgres
+    container_name: osiris-postgres
     deploy:
       restart_policy:
         condition: on-failure
@@ -43,12 +43,12 @@ services:
     ports:
       - "9000:5432"
     networks:
-       - posterior
+       - osiris
 
 networks:
-  posterior:
+  osiris:
     driver: bridge
       
 volumes:
-  posterior:
+  osiris:
   postgres:

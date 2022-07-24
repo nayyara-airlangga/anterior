@@ -1270,6 +1270,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "osiris"
+version = "0.1.0"
+dependencies = [
+ "actix-cors",
+ "actix-web",
+ "aes-gcm",
+ "chrono",
+ "dotenv",
+ "env_logger",
+ "fancy-regex",
+ "futures",
+ "jsonwebtoken",
+ "log",
+ "rust-argon2",
+ "serde",
+ "serde_json",
+ "slug",
+ "sqlx",
+]
+
+[[package]]
 name = "parking_lot"
 version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1366,27 +1387,6 @@ dependencies = [
  "cpufeatures",
  "opaque-debug",
  "universal-hash",
-]
-
-[[package]]
-name = "posterior"
-version = "0.1.0"
-dependencies = [
- "actix-cors",
- "actix-web",
- "aes-gcm",
- "chrono",
- "dotenv",
- "env_logger",
- "fancy-regex",
- "futures",
- "jsonwebtoken",
- "log",
- "rust-argon2",
- "serde",
- "serde_json",
- "slug",
- "sqlx",
 ]
 
 [[package]]
